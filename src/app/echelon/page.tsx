@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // ─── BIN DATABASE (simplified for demo — production would use a real BIN API) ───
 const BIN_RANGES = {
@@ -24,7 +24,7 @@ function detectCardBrand(number: string) {
   return null;
 }
 
-function detectCardType(number) {
+function detectCardType(number: string) {
   const n = number.replace(/\s/g, "");
   if (n.length < 6) return null;
   const bin6 = n.substring(0, 6);
@@ -32,7 +32,7 @@ function detectCardType(number) {
   return "credit"; // default assumption for demo
 }
 
-function formatCardNumber(value) {
+function formatCardNumber(value: string) {
   const v = value.replace(/\D/g, "").substring(0, 16);
   const brand = detectCardBrand(v);
   if (brand === "amex") {
@@ -43,21 +43,21 @@ function formatCardNumber(value) {
   return v.replace(/(\d{4})/g, "$1 ").trim();
 }
 
-function formatExpiry(value) {
+function formatExpiry(value: string) {
   const v = value.replace(/\D/g, "").substring(0, 4);
   if (v.length >= 3) return v.substring(0, 2) + " / " + v.substring(2);
   return v;
 }
 
 // ─── CARD BRAND ICONS (SVG) ───
-function CardBrandIcon({ brand, size = 32 }) {
-  const colors = {
+function CardBrandIcon({ brand, size = 32 }: { brand: string | null; size?: number }) {
+  const colors: Record<string, { bg: string; text: string; label: string }> = {
     visa: { bg: "#1A1F71", text: "#FFFFFF", label: "VISA" },
     mastercard: { bg: "#EB001B", text: "#FFFFFF", label: "MC" },
     amex: { bg: "#2E77BB", text: "#FFFFFF", label: "AMEX" },
     discover: { bg: "#FF6600", text: "#FFFFFF", label: "DISC" },
   };
-  const c = colors[brand];
+  const c = brand ? colors[brand] : undefined;
   if (!c) return null;
 
   if (brand === "mastercard") {
@@ -134,9 +134,9 @@ export default function EchelonPayModal() {
   const [email, setEmail] = useState("");
 
   // Derived state
-  const [cardBrand, setCardBrand] = useState(null);
-  const [cardType, setCardType] = useState(null);
-  const [errors, setErrors] = useState({});
+  const [cardBrand, setCardBrand] = useState<string | null>(null);
+  const [cardType, setCardType] = useState<"debit" | "credit" | null>(null);
+  const [errors, setErrors] = useState<Record<string, string | null>>({});
 
   const surchargeRate = 0.03;
   const surchargeAmount =
@@ -151,18 +151,18 @@ export default function EchelonPayModal() {
     setCardType(raw.length >= 6 ? detectCardType(raw) : null);
   }, [cardNumber]);
 
-  const handleCardNumberChange = (e) => {
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCardNumber(formatCardNumber(e.target.value));
     setErrors((prev) => ({ ...prev, cardNumber: null }));
   };
 
-  const handleExpiryChange = (e) => {
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setExpiry(formatExpiry(e.target.value));
     setErrors((prev) => ({ ...prev, expiry: null }));
   };
 
   const validate = () => {
-    const e = {};
+    const e: Record<string, string> = {};
     if (!cardName.trim()) e.cardName = "Required";
     if (cardNumber.replace(/\s/g, "").length < 15) e.cardNumber = "Invalid card number";
     if (expiry.replace(/\D/g, "").length < 4) e.expiry = "Invalid";
@@ -211,7 +211,7 @@ export default function EchelonPayModal() {
   };
 
   // ─── STYLES ───
-  const styles = {
+  const styles: { [key: string]: React.CSSProperties } = {
     // Demo page
     demoPage: {
       minHeight: "100vh",
@@ -601,9 +601,9 @@ export default function EchelonPayModal() {
   };
 
   // Focus state tracking for inputs
-  const [focused, setFocused] = useState(null);
+  const [focused, setFocused] = useState<string | null>(null);
 
-  const getInputStyle = (field) => ({
+  const getInputStyle = (field: string) => ({
     ...styles.input,
     ...(focused === field ? styles.inputFocus : {}),
     ...(errors[field] ? styles.inputError : {}),
