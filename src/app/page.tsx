@@ -1,6 +1,127 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 export default function Home() {
+  const [password, setPassword] = useState("");
+  const [unlocked, setUnlocked] = useState(false);
+  const [error, setError] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === "Peppostar") {
+      setUnlocked(true);
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
+
+  if (!unlocked) {
+    return (
+      <div
+        style={{
+          fontFamily: "'JetBrains Mono', 'SF Mono', 'Fira Code', monospace",
+          background: "#0a0a0a",
+          color: "#e0e0e0",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "32px",
+        }}
+      >
+        <h1
+          style={{
+            fontSize: "clamp(36px, 8vw, 64px)",
+            fontWeight: 800,
+            margin: 0,
+            lineHeight: 1,
+            letterSpacing: "-2px",
+            marginBottom: "32px",
+          }}
+        >
+          <span style={{ color: "#22c55e" }}>ISO</span>
+          <span style={{ color: "#fff" }}>PRO</span>
+        </h1>
+
+        <div
+          style={{
+            fontSize: "10px",
+            letterSpacing: "3px",
+            color: "#444",
+            textTransform: "uppercase",
+            marginBottom: "32px",
+          }}
+        >
+          Early Access
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "12px",
+            width: "100%",
+            maxWidth: "320px",
+          }}
+        >
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setError(false);
+            }}
+            placeholder="Password"
+            style={{
+              width: "100%",
+              padding: "14px 16px",
+              background: "#111",
+              border: `1px solid ${error ? "#ef4444" : "#222"}`,
+              borderRadius: "6px",
+              color: "#e0e0e0",
+              fontSize: "14px",
+              fontFamily: "inherit",
+              outline: "none",
+              textAlign: "center",
+              letterSpacing: "2px",
+              boxSizing: "border-box",
+            }}
+            autoFocus
+          />
+          {error && (
+            <div style={{ fontSize: "11px", color: "#ef4444" }}>
+              Wrong password
+            </div>
+          )}
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: "14px",
+              background: "#22c55e",
+              color: "#fff",
+              fontSize: "12px",
+              fontWeight: 700,
+              letterSpacing: "1px",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            ENTER
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
