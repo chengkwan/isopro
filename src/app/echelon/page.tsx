@@ -15,7 +15,7 @@ const BIN_RANGES = {
   ],
 };
 
-function detectCardBrand(number) {
+function detectCardBrand(number: string) {
   const n = number.replace(/\s/g, "");
   if (/^4/.test(n)) return "visa";
   if (/^5[1-5]/.test(n) || /^2[2-7]/.test(n)) return "mastercard";
